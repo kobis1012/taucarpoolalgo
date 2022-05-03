@@ -16,6 +16,7 @@ ODEDS_HOME = (32.11700290929014, 34.79429373720359)
 
 app = Flask(__name__)
 
+
 def parse_point(data):
     return float(data["Longitude"]), float(data["Latitude"])
 
