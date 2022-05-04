@@ -8,13 +8,10 @@ from flask import Flask, request
 import json
 
 MAX_DISTANCE = 4000
-
 TEL_AVIV_UNI = (32.11373035636576, 34.8058324089434)
-TEL_BARUCH_BEACH = (32.11712251881483, 34.780281180242206)
-KOBIS_HOME = (32.12313757976184, 34.80815597968024)
-ODEDS_HOME = (32.11700290929014, 34.79429373720359)
 
 app = Flask(__name__)
+G = None
 
 
 def parse_point(data):
@@ -38,6 +35,7 @@ def taucarpoolalgo_handler():
 def shortest_path(graph, start, end, midpoints):
     best_path_length = 99999999999
     best_path = None
+    best_path_order = None
     for ordered_points in permutations(midpoints):
         path = None
         path_length = 0
@@ -53,19 +51,17 @@ def shortest_path(graph, start, end, midpoints):
         if path_length < best_path_length:
             best_path = path
             best_path_length = path_length
+            best_path_order = list(ordered_points)
 
-    return best_path, best_path_length
+    return best_path, best_path_length, best_path_order
 
 
 def get_route(orig, dest, midpoints):
-    G = ox.graph_from_point(orig, dist=MAX_DISTANCE, network_type='drive')
-    G = ox.speed.add_edge_speeds(G)
-    G = ox.speed.add_edge_travel_times(G)
-
+    global G
     orig_node = ox.get_nearest_node(G, orig)
     dest_node = ox.get_nearest_node(G, dest)
     midnodes = list(map(lambda x: ox.get_nearest_node(G, x), midpoints))
-    chosen_path, path_length = shortest_path(G, orig_node, dest_node, midnodes)
+    chosen_path, path_length, best_midpoint_order = shortest_path(G, orig_node, dest_node, midnodes)
     route_map = ox.plot_route_folium(G, chosen_path)
     folium.Marker(
         location=[orig[0], orig[1]],
@@ -78,9 +74,11 @@ def get_route(orig, dest, midpoints):
         icon=folium.Icon(color="red", icon="university", prefix="fa")
     ).add_to(route_map)
     for midpoint in midpoints:
+        pickup_no = best_midpoint_order.index(ox.get_nearest_node(G, midpoint)) + 1
         folium.Marker(
             location=[midpoint[0], midpoint[1]],
-            icon=folium.Icon(color="blue", icon="user")
+            icon=folium.Icon(color="blue", icon="user"),
+            tooltip=f"Pickup {pickup_no}"
         ).add_to(route_map)
 
     with io.BytesIO() as html_stream:
@@ -90,7 +88,11 @@ def get_route(orig, dest, midpoints):
 
 
 def main():
+    global G
+
     ox.config(use_cache=True, log_console=True)
+    G = ox.graph_from_point(TEL_AVIV_UNI, dist=MAX_DISTANCE, network_type='drive')
+
     app.run(port=5000)
 
 
