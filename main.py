@@ -17,7 +17,6 @@ ODEDS_HOME = (32.11700290929014, 34.79429373720359)
 app = Flask(__name__)
 
 
-
 def parse_point(data):
     return float(data["Longitude"]), float(data["Latitude"])
 
@@ -32,7 +31,8 @@ def parse_json_data(data):
 @app.route('/taucarpoolalgo', methods=['POST'])
 def taucarpoolalgo_handler():
     start, end, midpoints = parse_json_data(request.json)
-    return json.dumps({"result": get_route(start, end, midpoints).decode("utf-8")})
+    html, path_length = get_route(start, end, midpoints)
+    return json.dumps({"length": path_length, "result": html.decode("utf-8")})
 
 
 def shortest_path(graph, start, end, midpoints):
@@ -67,11 +67,26 @@ def get_route(orig, dest, midpoints):
     midnodes = list(map(lambda x: ox.get_nearest_node(G, x), midpoints))
     chosen_path, path_length = shortest_path(G, orig_node, dest_node, midnodes)
     route_map = ox.plot_route_folium(G, chosen_path)
+    folium.Marker(
+        location=[orig[0], orig[1]],
+        tooltip="Origin",
+        icon=folium.Icon(color="green", icon="home")
+    ).add_to(route_map)
+    folium.Marker(
+        location=[dest[0], dest[1]],
+        tooltip="Destination",
+        icon=folium.Icon(color="red", icon="university", prefix="fa")
+    ).add_to(route_map)
+    for midpoint in midpoints:
+        folium.Marker(
+            location=[midpoint[0], midpoint[1]],
+            icon=folium.Icon(color="blue", icon="user")
+        ).add_to(route_map)
 
     with io.BytesIO() as html_stream:
         route_map.save(html_stream, close_file=False)
         html_stream.seek(0)
-        return html_stream.read()
+        return html_stream.read(), path_length
 
 
 def main():
