@@ -29,19 +29,10 @@ def parse_json_data(data):
     return parse_point(data['start']), parse_point(data['end']), midpoints
 
 
-@app.route('/meow', methods=['POST'])
-def meow_handler():
-    try:
-        data = request.json
-    except Exception as e:
-        print(e)
-    return json.dumps({"result": "meow"})
-
-
 @app.route('/taucarpoolalgo', methods=['POST'])
 def taucarpoolalgo_handler():
     start, end, midpoints = parse_json_data(request.json)
-    return json.dumps({"reuslt": get_route(start, end, midpoints).decode("utf-8")})
+    return json.dumps({"result": get_route(start, end, midpoints).decode("utf-8")})
 
 
 def shortest_path(graph, start, end, midpoints):
