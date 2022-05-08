@@ -1,4 +1,5 @@
 import io
+import traceback
 from itertools import permutations
 
 import osmnx as ox
@@ -7,7 +8,7 @@ import networkx as nx
 from flask import Flask, request
 import json
 
-MAX_DISTANCE = 4000
+MAX_DISTANCE = 10000
 TEL_AVIV_UNI = (32.11373035636576, 34.8058324089434)
 
 app = Flask(__name__)
@@ -27,9 +28,12 @@ def parse_json_data(data):
 
 @app.route('/taucarpoolalgo', methods=['POST'])
 def taucarpoolalgo_handler():
-    start, end, midpoints = parse_json_data(request.json)
-    html, path_length = get_route(start, end, midpoints)
-    return json.dumps({"length": path_length, "result": html.decode("utf-8")})
+    try:
+        start, end, midpoints = parse_json_data(request.json)
+        html, path_length = get_route(start, end, midpoints)
+        return json.dumps({"length": path_length, "result": html.decode("utf-8")})
+    except Exception:
+        return json.dumps({"internal_error": traceback.format_exc()})
 
 
 def shortest_path(graph, start, end, midpoints):
