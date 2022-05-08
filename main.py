@@ -26,6 +26,15 @@ def parse_json_data(data):
     return parse_point(data['start']), parse_point(data['end']), midpoints
 
 
+def get_graph():
+    global G
+
+    if G is None:
+        G = ox.graph_from_point(TEL_AVIV_UNI, dist=MAX_DISTANCE, network_type='drive')
+
+    return G
+
+
 @app.route('/taucarpoolalgo', methods=['POST'])
 def taucarpoolalgo_handler():
     try:
@@ -61,7 +70,7 @@ def shortest_path(graph, start, end, midpoints):
 
 
 def get_route(orig, dest, midpoints):
-    global G
+    G = get_graph()
     orig_node = ox.get_nearest_node(G, orig)
     dest_node = ox.get_nearest_node(G, dest)
     midnodes = list(map(lambda x: ox.get_nearest_node(G, x), midpoints))
@@ -92,11 +101,7 @@ def get_route(orig, dest, midpoints):
 
 
 def main():
-    global G
-
     ox.config(use_cache=True, log_console=True)
-    G = ox.graph_from_point(TEL_AVIV_UNI, dist=MAX_DISTANCE, network_type='drive')
-
     app.run(port=5000)
 
 
