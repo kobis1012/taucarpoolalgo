@@ -1,4 +1,5 @@
 import io
+import time
 import traceback
 from itertools import permutations
 
@@ -30,7 +31,15 @@ def get_graph():
     global G
 
     if G is None:
-        G = ox.graph_from_point(TEL_AVIV_UNI, dist=MAX_DISTANCE, network_type='drive')
+        G = ox.graph_from_point(
+            TEL_AVIV_UNI,
+            dist=MAX_DISTANCE,
+            network_type='drive',
+            custom_filter=
+            '["highway"~"primary|motorway|motorway_link|trunk|trunk_link|secondary|tertiary|primary_link|tertiary_link|unclassified|living_street|residential"]'
+        )
+        G = ox.speed.add_edge_speeds(G)
+        G = ox.speed.add_edge_travel_times(G)
 
     return G
 
