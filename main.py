@@ -8,11 +8,13 @@ import folium
 import networkx as nx
 from flask import Flask, request
 import json
+from flask_cors import CORS
 
 MAX_DISTANCE = 5000
 TEL_AVIV_UNI = (32.11373035636576, 34.8058324089434)
 
 app = Flask(__name__)
+CORS(app)
 G = None
 
 
