@@ -7,27 +7,27 @@ body = {
         "Latitude": 34.8058324089434
     },
     "start": {
-        "Longitude": 32.327247488672384,
-        "Latitude": 34.85820557652936
+        "Longitude": 32.123458696068184,
+        "Latitude": 34.80682195595362
     },
     "midpoints": [
         {
-            "Longitude": 32.12510358738037,
-            "Latitude": 34.80384417769697
+            "Longitude": 32.12262873057995,
+            "Latitude": 34.802691456068274
         },
         {
-            "Longitude": 32.185310157278415,
-            "Latitude": 34.85437967985504
+            "Longitude": 32.110645105693465,
+            "Latitude": 34.78818997566331
         },
         {
-            "Longitude": 32.167310607900724,
-            "Latitude": 34.84131225426192
+            "Longitude": 32.116365083646365,
+            "Latitude": 34.79480298789226
         }
     ]
 }
 
-# myurl = "https://taucarpool.herokuapp.com/taucarpoolalgo"
-myurl = "http://127.0.0.1:5000/taucarpoolalgo"
+myurl = "http://taucarpool.herokuapp.com/taucarpoolalgo"
+# myurl = "http://127.0.0.1:5000/taucarpoolalgo"
 
 headers = {
     "Content-Type": "application/json",
