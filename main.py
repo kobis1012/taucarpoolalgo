@@ -9,8 +9,9 @@ import networkx as nx
 from flask import Flask, request
 import json
 from flask_cors import CORS
+import logging
 
-MAX_DISTANCE = 5000
+MAX_DISTANCE = 500
 TEL_AVIV_UNI = (32.11373035636576, 34.8058324089434)
 
 app = Flask(__name__)
@@ -112,6 +113,10 @@ def get_route(orig, dest, midpoints):
 
 
 def main():
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
     ox.config(use_cache=True, log_console=True)
     app.run(port=5000)
 
