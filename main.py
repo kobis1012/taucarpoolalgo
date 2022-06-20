@@ -11,7 +11,7 @@ import json
 from flask_cors import CORS
 import logging
 
-MAX_DISTANCE = 500
+MAX_DISTANCE = 5000
 TEL_AVIV_UNI = (32.11373035636576, 34.8058324089434)
 
 app = Flask(__name__)
