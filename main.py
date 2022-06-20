@@ -117,7 +117,7 @@ def main():
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
-    ox.config(use_cache=True, log_console=True)
+    ox.config(use_cache=True, log_console=True, log_name='gunicorn.error', log_file=True, log_level=logging.DEBUG)
     app.run(port=5000)
 
 
